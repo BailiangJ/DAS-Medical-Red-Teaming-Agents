@@ -1,0 +1,36 @@
+# Credentials
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Evaluation artifacts
+logs/
+outputs/
+results/
+*.inprogress
+*.tmp
+
+# Local data and models
+*.xlsx
+*.xls
+*.jsonl
+*.safetensors
+*.bin
+models_cache/
+
+# Editors and OS
+.DS_Store
+.vscode/
+.idea/

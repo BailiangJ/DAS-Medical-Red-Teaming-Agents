@@ -12,6 +12,7 @@ from med_red_team.shared.config_loading import load_config
 from med_red_team.shared.io import (
     atomic_write_json,
     build_result_envelope,
+    ensure_result_metadata,
     read_json,
     to_jsonable,
     validate_output_path,
@@ -28,6 +29,7 @@ __all__ = [
     "atomic_write_json",
     "build_result_envelope",
     "checkpoint_path",
+    "ensure_result_metadata",
     "extract_json_object",
     "load_checkpoint",
     "load_config",

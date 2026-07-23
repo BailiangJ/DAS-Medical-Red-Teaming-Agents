@@ -116,12 +116,15 @@ def evaluate_items_fail_fast(
     save_every: int = 10,
     verbose: bool = True,
     use_tqdm: bool = True,
+    stop_fn: Callable[[int, list[ResultT]], bool] | None = None,
 ) -> list[ResultT]:
     """Evaluate sequentially, checkpoint completed results, and re-raise errors."""
     results: list[ResultT] = []
     iterator = enumerate(tqdm(items, desc=description, disable=not use_tqdm))
     try:
         for index, item in iterator:
+            if stop_fn and stop_fn(index, results):
+                break
             try:
                 results.append(evaluate_fn(item, index))
                 if progress_callback and len(results) % save_every == 0:

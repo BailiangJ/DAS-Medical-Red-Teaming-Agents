@@ -94,6 +94,41 @@ def read_json(path: str | Path) -> Any:
         return json.load(handle)
 
 
+def ensure_result_metadata(
+    metadata: dict[str, Any] | None,
+    *,
+    axis: str,
+) -> dict[str, Any]:
+    """Add the small common v2 metadata envelope without replacing axis fields."""
+    result = dict(metadata or {})
+    result.setdefault("schema_version", "2.0")
+    result.setdefault("axis", axis)
+    result.setdefault("phase", result.get("mode", "unknown"))
+    result.setdefault("config", {})
+    result.setdefault(
+        "models",
+        {
+            key: result[key]
+            for key in (
+                "target_model",
+                "testee_model",
+                "grader_model",
+                "generator_model",
+                "orchestrator_model",
+                "tools_model",
+            )
+            if key in result
+        },
+    )
+    result.setdefault(
+        "dataset",
+        result.get("dataset_info", result.get("data_file", {})),
+    )
+    result.setdefault("source", {})
+    result.setdefault("is_partial", False)
+    return result
+
+
 def build_result_envelope(
     *,
     metadata: dict[str, Any],

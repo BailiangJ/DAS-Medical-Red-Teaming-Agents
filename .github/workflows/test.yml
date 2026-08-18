@@ -44,9 +44,6 @@ jobs:
             scripts.healthbench.run_attack
             scripts.healthbench.run_baseline_split
             scripts.healthbench.run_attack_replay
-            scripts.healthbench.generate_baseline_html
-            scripts.healthbench.generate_attack_html
-            scripts.healthbench.generate_impossible_measurement_html
             scripts.hallucination.run_baseline
             scripts.hallucination.run_detector
             scripts.hallucination.summarize_artifacts

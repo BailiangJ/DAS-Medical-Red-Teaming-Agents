@@ -6,10 +6,16 @@ from med_red_team.shared.checkpoints import (
     load_checkpoint,
     merge_unique,
     remove_checkpoint,
+    require_complete_artifact,
+    retire_foreign_checkpoint,
     validate_resume_metadata,
     write_checkpoint,
 )
-from med_red_team.shared.config_loading import load_config
+from med_red_team.shared.config_loading import (
+    clone_config,
+    load_config,
+    resolve_sample_limit,
+)
 
 
 @dataclass
@@ -31,6 +37,27 @@ def test_config_loader_requires_explicit_config(tmp_path):
         load_config(missing, ExampleConfig)
 
 
+def test_clone_config_returns_independent_instance():
+    original = ExampleConfig(name="original")
+    cloned = clone_config(original)
+    cloned.name = "changed"
+
+    assert cloned is not original
+    assert original.name == "original"
+
+
+def test_sample_limit_resolution_uses_cli_then_config_and_rejects_bool():
+    assert resolve_sample_limit(None, None) is None
+    assert resolve_sample_limit(None, 4) == 4
+    assert resolve_sample_limit(0, 4) == 0
+    assert resolve_sample_limit(2, 4) == 2
+
+    with pytest.raises(ValueError):
+        resolve_sample_limit(True, None)
+    with pytest.raises(ValueError):
+        resolve_sample_limit(-1, None)
+
+
 def test_checkpoint_primitives_and_axis_owned_identity(tmp_path):
     output = tmp_path / "results.json"
     payload = {"metadata": {"axis": "bias"}, "results": [{"id": 1}]}
@@ -49,6 +76,43 @@ def test_checkpoint_primitives_and_axis_owned_identity(tmp_path):
 
     remove_checkpoint(output)
     assert load_checkpoint(output) is None
+
+
+def test_foreign_checkpoint_retirement_requires_explicit_opt_in(tmp_path, monkeypatch):
+    foreign = tmp_path / "old.json.inprogress"
+    canonical = tmp_path / "new.json.inprogress"
+    foreign.write_text("old", encoding="utf-8")
+
+    assert not retire_foreign_checkpoint(foreign, canonical)
+    assert foreign.exists()
+
+    canonical.write_text("new", encoding="utf-8")
+    assert not retire_foreign_checkpoint(foreign, canonical)
+    assert foreign.exists()
+    assert retire_foreign_checkpoint(foreign, canonical, enabled=True)
+    assert not foreign.exists()
+    assert canonical.exists()
+
+    assert not retire_foreign_checkpoint(canonical, canonical, enabled=True)
+    monkeypatch.chdir(tmp_path)
+    assert not retire_foreign_checkpoint(
+        canonical.name,
+        canonical.resolve(),
+        enabled=True,
+    )
+    assert canonical.exists()
+    complete = tmp_path / "complete.json"
+    complete.write_text("complete", encoding="utf-8")
+    assert not retire_foreign_checkpoint(complete, canonical, enabled=True)
+    assert complete.exists()
+
+
+def test_partial_artifact_is_rejected_as_completed_input():
+    require_complete_artifact({"is_partial": False})
+    with pytest.raises(ValueError, match="complete"):
+        require_complete_artifact({"is_partial": True})
+    with pytest.raises(ValueError, match="complete"):
+        require_complete_artifact({})
 
 
 def test_resume_metadata_validation():

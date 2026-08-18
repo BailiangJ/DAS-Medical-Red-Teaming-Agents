@@ -69,7 +69,7 @@ class APIBasedModel(LLMInterface):
         if not api_key:
             raise APIKeyMissingError(
                 f"API key not found: {env_var}. "
-                f"Please set this environment variable or run your API key setup script."
+                "Set this environment variable before starting the provider-backed run."
             )
     
     @abstractmethod

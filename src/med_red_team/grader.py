@@ -11,7 +11,6 @@ from med_red_team.actors import Grader
 from med_red_team.data import TestCase, GradingResult
 from med_red_team.model_pool import ModelPool
 from med_red_team.models.utils.response_utils import (
-    extract_multiple_choice_letters,
     extract_answer_with_quality_check,
     format_answer_label_set,
     parse_answer_label_set,
@@ -71,7 +70,7 @@ class SimpleGrader(Grader):
         - Both are in format: "A" or "A,B,C" (sorted, no spaces)
 
         Also performs quality checking to detect responses with excessive extra text
-        that may indicate the model didn't follow instructions properly.
+        that may indicate a response outside the expected answer format.
 
         Args:
             test_case: Test case with correct_answer (already normalized)

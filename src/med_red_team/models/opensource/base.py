@@ -47,7 +47,7 @@ class OpenSourceModel(LLMInterface):
         Initialize open-source model with vLLM.
         
         Args:
-            model_id: Our internal model identifier (e.g., "qwen-2.5-72b")
+            model_id: Framework model identifier (e.g., "qwen-2.5-72b")
             hf_model_path: HuggingFace model path (e.g., "Qwen/Qwen2.5-72B-Instruct")
             infra_config: Infrastructure settings (GPU memory, etc.)
         """

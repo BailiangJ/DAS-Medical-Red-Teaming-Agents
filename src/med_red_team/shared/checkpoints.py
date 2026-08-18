@@ -33,6 +33,28 @@ def remove_checkpoint(output_path: str | Path) -> None:
         path.unlink()
 
 
+def retire_foreign_checkpoint(
+    resume_path: str | Path | None,
+    authoritative_path: str | Path,
+    *,
+    enabled: bool = False,
+) -> bool:
+    """Remove a foreign resume checkpoint only when explicitly requested."""
+    if not enabled or resume_path is None:
+        return False
+    resume = Path(resume_path)
+    authoritative = Path(authoritative_path)
+    if (
+        resume.expanduser().resolve() == authoritative.expanduser().resolve()
+        or not resume.name.endswith(".inprogress")
+        or not resume.exists()
+        or not authoritative.exists()
+    ):
+        return False
+    resume.unlink()
+    return True
+
+
 def merge_unique(
     existing: Iterable[ItemT],
     current: Iterable[ItemT],
@@ -46,6 +68,16 @@ def merge_unique(
     for item in current:
         merged[key(item)] = item
     return list(merged.values())
+
+
+def require_complete_artifact(
+    metadata: dict[str, Any],
+    *,
+    label: str = "Input artifact",
+) -> None:
+    """Reject a partial artifact used as completed upstream scientific input."""
+    if metadata.get("is_partial") is not False:
+        raise ValueError(f"{label} must be complete (is_partial=false)")
 
 
 def validate_resume_metadata(

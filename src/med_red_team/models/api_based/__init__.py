@@ -1,4 +1,7 @@
-from .openai_model import GPTModel, OGPTModel
-from .anthropic_model import ClaudeModel
-from .google_model import GeminiModel
-from .deepseek_model import DeepSeekModel
+"""Provider implementations loaded lazily through :class:`ModelFactory`.
+
+Import concrete classes from their provider modules only when direct access is
+required. Importing this package does not require every optional provider SDK.
+"""
+
+__all__: list[str] = []

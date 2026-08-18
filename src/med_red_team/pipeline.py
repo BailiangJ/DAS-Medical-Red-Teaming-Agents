@@ -1,12 +1,8 @@
-from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional, Generic, TypeVar, Callable, Tuple
-from pathlib import Path
-from datetime import datetime
+from typing import List, Any, Optional, TypeVar, Callable, Tuple
 
-from med_red_team.data import TestCase, EvaluationResult, EvaluationSummary
+from med_red_team.data import EvaluationResult, EvaluationSummary
 from med_red_team.testee import Testee
 from med_red_team.grader import Grader
-from med_red_team.actors import AttackStrategy
 
 
 # Type aliases for clarity
@@ -14,32 +10,18 @@ EvalResult = TypeVar('EvalResult')  # Axis-specific result type
 EvalSummary = TypeVar('EvalSummary')  # Axis-specific summary type
 
 
-class EvaluationPipeline(ABC):
+class EvaluationPipeline:
     """
-    Abstract base class for two-phase evaluation pipelines.
+    Shared helper base for axis-specific evaluation pipelines.
 
-    All red-teaming axes follow a standardized two-phase pattern:
-    1. Baseline phase: Test original cases, save self-contained results
-    2. Attack phase: Load baseline results, apply attacks, test again
+    Concrete axes keep their own public entrypoints and result types. This base
+    class exists only to hold the common loop, progress, and summary-printing
+    helpers reused by Privacy, Bias, HealthBench, and Robustness. Callers should
+    use the concrete pipeline methods exposed by each axis rather than relying on
+    a universal ``evaluate()`` contract.
 
-    This base class enforces the common interface across all axes
-    (Privacy, Bias, HealthBench, Robustness).
-
-    Subclasses must implement:
-    - run_baseline(): Execute baseline evaluation (phase 1)
-    - run_attack(): Execute attack evaluation (phase 2)
-    - save_results(): Save results with standardized format
-
-    Example:
-        >>> pipeline = MyPipeline(testee, grader, attack_strategies)
-        >>>
-        >>> # Phase 1: Baseline
-        >>> baseline_results, summary = pipeline.run_baseline(test_cases)
-        >>> pipeline.save_results(baseline_results, summary, "baseline.json")
-        >>>
-        >>> # Phase 2: Attack
-        >>> attack_results, summary = pipeline.run_attack(baseline_results)
-        >>> pipeline.save_results(attack_results, summary, "attack.json")
+    Concrete pipelines expose their own public run/save APIs. This class only
+    provides protected evaluation-loop and reporting helpers.
     """
 
     def __init__(
@@ -60,147 +42,6 @@ class EvaluationPipeline(ABC):
         self.grader = grader
         self.verbose = verbose
     
-    def evaluate(
-        self,
-        test_cases: List[TestCase],
-        progress_callback = None,
-        save_every: int = 10,
-        **kwargs
-    ) -> tuple[List[EvaluationResult], EvaluationSummary]:
-        """
-        Run complete evaluation pipeline with crash recovery support.
-
-        This is the main entry point that orchestrates the evaluation.
-        It calls task-specific methods that subclasses implement.
-
-        Supports periodic checkpointing via progress_callback for crash recovery.
-
-        Args:
-            test_cases: List of test cases to evaluate
-            progress_callback: Optional callback(results) for periodic saving
-            save_every: Save checkpoint every N cases (default: 10)
-            **kwargs: Task-specific parameters
-
-        Returns:
-            Tuple of (results_list, summary)
-
-        Example:
-            >>> results, summary = pipeline.evaluate(
-            ...     test_cases,
-            ...     progress_callback=callback,
-            ...     save_every=10
-            ... )
-        """
-        from med_red_team.utils import evaluate_items_fail_fast
-
-        # Task-specific setup
-        self._setup_evaluation(**kwargs)
-
-        # Create evaluation wrapper with stopping criteria
-        def _evaluate_with_stopping(test_case, idx):
-            """Wrapper that checks stopping criteria before evaluating."""
-            # Note: stopping check moved to before evaluation
-            # This is slightly different from original but more efficient
-            return self.evaluate_single(test_case, idx, **kwargs)
-
-        # Use safe_evaluate_loop for consistent error handling and progress tracking
-        results = evaluate_items_fail_fast(
-            items=test_cases,
-            evaluate_fn=_evaluate_with_stopping,
-            description=f"{self.__class__.__name__.replace('Pipeline', '')} evaluation",
-            progress_callback=progress_callback,
-            save_every=save_every,
-            verbose=self.verbose
-        )
-
-        # Note: Stopping criteria now handled via max_samples in kwargs
-        # Subclasses can filter test_cases before calling evaluate()
-
-        # Create summary
-        summary = self.create_summary(results, **kwargs)
-
-        # Final report
-        if self.verbose:
-            self._print_summary(summary)
-
-        return results, summary
-    
-    # =========================================================================
-    # New Abstract Methods (Required for all pipelines)
-    # =========================================================================
-
-    @abstractmethod
-    def run_baseline(
-        self,
-        test_cases: List[TestCase],
-        max_samples: Optional[int] = None,
-        progress_callback: Optional[Any] = None,
-        save_every: int = 10
-    ) -> tuple[List[EvaluationResult], EvaluationSummary]:
-        """
-        Run baseline evaluation (phase 1).
-
-        Test original cases without attacks and save self-contained results.
-
-        Args:
-            test_cases: List of test cases to evaluate
-            max_samples: Maximum number of samples to process (None = all)
-            progress_callback: Optional callback for periodic checkpointing
-            save_every: Save checkpoint every N cases
-
-        Returns:
-            Tuple of (results_list, summary)
-        """
-        pass
-
-    @abstractmethod
-    def run_attack(
-        self,
-        baseline_results: List[EvaluationResult],
-        progress_callback: Optional[Any] = None,
-        save_every: int = 10
-    ) -> tuple[List[EvaluationResult], EvaluationSummary]:
-        """
-        Run attack evaluation (phase 2).
-
-        Load baseline results, apply attacks, and test manipulated cases.
-
-        Args:
-            baseline_results: Self-contained baseline results from phase 1
-            progress_callback: Optional callback for periodic checkpointing
-            save_every: Save checkpoint every N cases
-
-        Returns:
-            Tuple of (results_list, summary)
-        """
-        pass
-
-    @abstractmethod
-    def save_results(
-        self,
-        results: List[EvaluationResult],
-        summary: EvaluationSummary,
-        output_path: str,
-        metadata: Optional[Dict[str, Any]] = None
-    ) -> None:
-        """
-        Save evaluation results with standardized format.
-
-        Args:
-            results: List of evaluation results
-            summary: Evaluation summary
-            output_path: Path to output JSON file
-            metadata: Optional metadata dict (can include config, dataset_info, etc.)
-
-        Format:
-            {
-                "metadata": {...},
-                "summary": {...},
-                "results": [...]
-            }
-        """
-        pass
-
     # =========================================================================
     # Common Evaluation Methods (Shared Across All Axes)
     # =========================================================================
@@ -399,41 +240,9 @@ class EvaluationPipeline(ABC):
         return results, summary
 
     # =========================================================================
-    # Old Abstract Methods (Deprecated - kept for backward compatibility)
+    # Misc shared hooks
     # =========================================================================
 
-    def evaluate_single(
-        self,
-        test_case: TestCase,
-        sample_idx: int,
-        **kwargs
-    ) -> EvaluationResult:
-        """
-        DEPRECATED: Use run_baseline() and run_attack() instead.
-
-        This method is kept for backward compatibility with orchestrator pipeline.
-        New code should use the separated baseline/attack pattern.
-        """
-        raise NotImplementedError(
-            "evaluate_single() is deprecated. "
-            "Use run_baseline() and run_attack() methods instead."
-        )
-
-    def create_summary(
-        self,
-        results: List[EvaluationResult],
-        **kwargs
-    ) -> EvaluationSummary:
-        """
-        DEPRECATED: Summaries are now returned directly from run_baseline()/run_attack().
-
-        This method is kept for backward compatibility.
-        """
-        raise NotImplementedError(
-            "create_summary() is deprecated. "
-            "Summaries are returned from run_baseline()/run_attack()."
-        )
-    
     def _setup_evaluation(self, **kwargs):
         """
         Setup before evaluation starts.
@@ -463,33 +272,6 @@ class EvaluationPipeline(ABC):
         """
         return False
     
-    def _create_iterator(self, test_cases: List[TestCase]):
-        """
-        Create iterator for test cases.
-        
-        Subclasses can override to add progress bars, etc.
-        
-        Args:
-            test_cases: List of test cases
-        
-        Returns:
-            Iterator over test cases
-        """
-        if self.verbose:
-            from tqdm import tqdm
-            return tqdm(test_cases, desc="Evaluating")
-        return test_cases
-    
-    def _print_progress(self, idx: int, result: EvaluationResult):
-        """
-        Print progress update.
-        
-        Subclasses can override for custom progress reporting.
-        """
-        if self.verbose:
-            status = "SKIPPED" if result.skipped else "COMPLETED"
-            print(f"[Sample {idx + 1}] {status}")
-    
     def _print_summary(self, summary: EvaluationSummary):
         """
         Print final summary.
@@ -503,107 +285,3 @@ class EvaluationPipeline(ABC):
             for key, value in summary.to_dict().items():
                 print(f"{key}: {value}")
             print("=" * 70)
-
-
-class ResultsLogger(ABC):
-    """
-    DEPRECATED: Use pipeline.save_results() instead.
-
-    This class is kept for backward compatibility but is no longer
-    the recommended way to save results. New code should use the
-    standardized pipeline.save_results() method.
-
-    Migration path:
-        OLD:
-            logger = RobustnessLogger(output_dir, model_id)
-            output_path = logger.save(
-                results, summary,
-                config=config, testee=testee, ...
-            )
-
-        NEW:
-            from scripts.utils import generate_output_path
-
-            output_path = generate_output_path(
-                log_dir=output_dir,
-                testee_model=model_id,
-                mode="robustness_baseline",
-                ...
-            )
-
-            pipeline.save_results(
-                results, summary, str(output_path),
-                metadata={
-                    "config": config.to_dict(),
-                    "testee_config": testee.config.to_dict() if testee.config else {},
-                    ...
-                }
-            )
-
-    Benefits of new approach:
-        - Single way to save results across all axes
-        - Consistent with Privacy/HealthBench pipelines
-        - Simpler architecture with less code to maintain
-        - Metadata is explicit and extensible via dict
-
-    Each evaluation type may have different logging requirements,
-    but all follow this basic structure.
-    """
-    
-    def __init__(
-        self,
-        output_dir: str,
-        evaluation_type: str,
-        create_dir: bool = True
-    ):
-        """
-        Initialize logger.
-        
-        Args:
-            output_dir: Directory to save results
-            evaluation_type: Type of evaluation (bias/robustness/privacy/hallucination)
-            create_dir: Whether to create directory if it doesn't exist
-        """
-        self.output_dir = Path(output_dir)
-        self.evaluation_type = evaluation_type
-        
-        if create_dir:
-            self.output_dir.mkdir(parents=True, exist_ok=True)
-    
-    @abstractmethod
-    def save(
-        self,
-        results: List[EvaluationResult],
-        summary: EvaluationSummary,
-        **kwargs
-    ) -> Path:
-        """
-        Save evaluation results.
-        
-        Args:
-            results: List of evaluation results
-            summary: Evaluation summary
-            **kwargs: Additional data to save
-        
-        Returns:
-            Path to saved file
-        """
-        pass
-    
-    def _generate_filename(
-        self,
-        prefix: str,
-        suffix: str = "json"
-    ) -> str:
-        """
-        Generate filename with timestamp.
-        
-        Args:
-            prefix: Filename prefix
-            suffix: File extension
-        
-        Returns:
-            Filename string
-        """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        return f"{self.evaluation_type}_{prefix}_{timestamp}.{suffix}"

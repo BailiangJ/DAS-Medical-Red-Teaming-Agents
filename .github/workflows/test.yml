@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [v2]
 
+permissions:
+  contents: read
+
 jobs:
   no-api-tests:
     runs-on: ubuntu-latest
@@ -14,6 +17,208 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: python -m pip install -e ".[dev]"
-      - run: python -m compileall src scripts
-      - run: python -m pytest -m "not live"
+      - name: Check patch whitespace
+        run: git diff --check
+      - name: Validate releasable source tree
+        run: PYTHONDONTWRITEBYTECODE=1 python -m scripts.validate_release_tree
+      - name: Install provider-free development dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Compile public Python sources
+        run: python -m compileall src scripts configs tests
+      - name: Smoke-test supported runner help without credentials
+        shell: bash
+        run: |
+          unset OPENAI_API_KEY ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN ANTHROPIC_PROFILE
+          unset GEMINI_API_KEY GOOGLE_API_KEY DEEPSEEK_API_KEY HF_TOKEN
+          modules=(
+            scripts.robustness.run_baseline
+            scripts.robustness.run_attack
+            scripts.robustness.run_generate_attacks
+            scripts.robustness.run_attack_replay
+            scripts.robustness.run_orchestrator
+            scripts.privacy.run_baseline
+            scripts.privacy.run_attack
+            scripts.bias.run_baseline
+            scripts.bias.run_attack
+            scripts.healthbench.run_baseline
+            scripts.healthbench.run_attack
+            scripts.healthbench.run_baseline_split
+            scripts.healthbench.run_attack_replay
+            scripts.healthbench.generate_baseline_html
+            scripts.healthbench.generate_attack_html
+            scripts.healthbench.generate_impossible_measurement_html
+            scripts.hallucination.run_baseline
+            scripts.hallucination.run_detector
+            scripts.hallucination.summarize_artifacts
+            scripts.hallucination.validate_artifacts
+          )
+          for module in "${modules[@]}"; do
+            echo "Checking $module --help"
+            PYTHONPATH="$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE" \
+              python -m "$module" --help >/dev/null
+          done
+      - name: Validate hallucination artifact manifest
+        run: python -m scripts.hallucination.validate_artifacts --manifest artifacts/hallucination/manifest.json
+      - name: Run provider-free tests
+        run: python -m pytest
+      - name: Build clean wheel
+        shell: bash
+        run: |
+          rm -rf "$RUNNER_TEMP/v2-wheel"
+          python -m build --wheel --outdir "$RUNNER_TEMP/v2-wheel"
+      - name: Install and verify clean wheel boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          wheel=$(find "$RUNNER_TEMP/v2-wheel" -maxdepth 1 -type f -name '*.whl' -print -quit)
+          test -n "$wheel"
+          venv="$RUNNER_TEMP/v2-wheel-venv"
+          python -m venv "$venv"
+          "$venv/bin/python" -m pip install --upgrade pip
+          "$venv/bin/python" -m pip install "$wheel"
+          mkdir -p "$RUNNER_TEMP/v2-wheel-probe"
+          cd "$RUNNER_TEMP/v2-wheel-probe"
+          WHEEL_PATH="$wheel" GITHUB_WORKSPACE="$GITHUB_WORKSPACE" \
+            env -u PYTHONPATH -u PYTHONHOME PYTHONNOUSERSITE=1 \
+            "$venv/bin/python" - <<'PY'
+          from __future__ import annotations
+
+          import importlib
+          import importlib.metadata
+          import importlib.util
+          import os
+          from pathlib import Path, PurePosixPath
+          import sys
+          import zipfile
+
+          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+
+          def is_under_checkout(entry: str) -> bool:
+              try:
+                  Path(entry).resolve().relative_to(workspace)
+              except ValueError:
+                  return False
+              return True
+
+          assert not is_under_checkout(str(Path.cwd())), (
+              "wheel probe must run outside checkout"
+          )
+          assert not any(
+              is_under_checkout(entry) for entry in sys.path if entry
+          ), "checkout leaked into wheel probe sys.path"
+
+          modules = [
+              "med_red_team",
+              "med_red_team.actors",
+              "med_red_team.attacker_registry",
+              "med_red_team.config",
+              "med_red_team.data",
+              "med_red_team.grader",
+              "med_red_team.model_pool",
+              "med_red_team.pipeline",
+              "med_red_team.testee",
+              "med_red_team.utils",
+              "med_red_team.models",
+              "med_red_team.models.interfaces",
+              "med_red_team.models.factory",
+              "med_red_team.models.registry",
+              "med_red_team.models.api_based",
+              "med_red_team.models.api_based.base",
+              "med_red_team.models.opensource",
+              "med_red_team.models.utils",
+              "med_red_team.models.utils.response_utils",
+              "med_red_team.shared",
+              "med_red_team.shared.checkpoints",
+              "med_red_team.shared.config_loading",
+              "med_red_team.shared.io",
+              "med_red_team.shared.parsing",
+              "med_red_team.robustness",
+              "med_red_team.robustness.attacker",
+              "med_red_team.robustness.config",
+              "med_red_team.robustness.data",
+              "med_red_team.robustness.medqa_loader",
+              "med_red_team.robustness.pipeline",
+              "med_red_team.robustness.prompts",
+              "med_red_team.robustness.tool_policy",
+              "med_red_team.robustness.tool_registry",
+              "med_red_team.privacy",
+              "med_red_team.privacy.attacker",
+              "med_red_team.privacy.config",
+              "med_red_team.privacy.data",
+              "med_red_team.privacy.grader",
+              "med_red_team.privacy.pipeline",
+              "med_red_team.privacy.results_io",
+              "med_red_team.privacy.privacy_dataset_loader",
+              "med_red_team.privacy.prompts",
+              "med_red_team.privacy.stage_handoff",
+              "med_red_team.bias",
+              "med_red_team.bias.attacker",
+              "med_red_team.bias.config",
+              "med_red_team.bias.data",
+              "med_red_team.bias.grader",
+              "med_red_team.bias.pipeline",
+              "med_red_team.bias.prompts",
+              "med_red_team.bias.utils",
+              "med_red_team.healthbench",
+              "med_red_team.healthbench.attacker",
+              "med_red_team.healthbench.config",
+              "med_red_team.healthbench.data",
+              "med_red_team.healthbench.grader",
+              "med_red_team.healthbench.pipeline",
+              "med_red_team.healthbench.prompts",
+              "med_red_team.healthbench.utils",
+              "med_red_team.hallucination",
+              "med_red_team.hallucination.artifact_validation",
+              "med_red_team.hallucination.detectors.base",
+              "med_red_team.hallucination.config",
+              "med_red_team.hallucination.data",
+              "med_red_team.hallucination.grader",
+              "med_red_team.hallucination.metrics",
+              "med_red_team.hallucination.pipeline",
+              "med_red_team.hallucination.prompts",
+              "med_red_team.hallucination.schemas",
+          ]
+          for module in modules:
+              importlib.import_module(module)
+          print(f"Imported {len(modules)} provider-free wheel modules")
+
+          forbidden = {"scripts", "configs", "docs", "artifacts"}
+          for name in sorted(forbidden):
+              assert importlib.util.find_spec(name) is None, (
+                  f"{name} is importable from the installed wheel"
+              )
+
+          wheel_path = Path(os.environ["WHEEL_PATH"])
+          with zipfile.ZipFile(wheel_path) as archive:
+              members = [PurePosixPath(name) for name in archive.namelist()]
+              for member in members:
+                  if member.parts and member.parts[0] in forbidden:
+                      raise AssertionError(
+                          f"wheel contains forbidden top-level content: {member}"
+                      )
+              entry_point_files = [
+                  member for member in members
+                  if len(member.parts) == 2
+                  and member.parts[0].endswith(".dist-info")
+                  and member.name == "entry_points.txt"
+              ]
+              for entry_point_file in entry_point_files:
+                  text = archive.read(str(entry_point_file)).decode("utf-8")
+                  assert "[console_scripts]" not in text, (
+                      "wheel declares console entry points"
+                  )
+
+          distribution = importlib.metadata.distribution(
+              "das-medical-red-teaming-agents"
+          )
+          assert all(
+              entry_point.group != "console_scripts"
+              for entry_point in distribution.entry_points
+          ), "installed distribution declares console entry points"
+          installed_files = distribution.files or ()
+          assert not any(
+              PurePosixPath(str(path)).parts
+              and PurePosixPath(str(path)).parts[0] in forbidden
+              for path in installed_files
+          ), "installed metadata lists forbidden top-level content"
+          PY

@@ -57,19 +57,45 @@ def generate_and_validate_output_path(**kwargs) -> Path | None:
     return path if validate_output_path(path, quiet=quiet) else None
 
 
-def create_attack_strategies_from_config(config, model_pool, strategy_getter=None) -> list:
+def create_attack_strategies_from_config(
+    config,
+    model_pool,
+    strategy_getter=None,
+    *,
+    verbose: bool | None = None,
+) -> list:
     if strategy_getter is None:
         from med_red_team.attacker_registry import get_strategy
 
         strategy_getter = get_strategy
-    return [
-        strategy_getter(
-            strategy_name=name,
-            model_pool=model_pool,
-            **strategy_kwargs,
+
+    configured_strategies = (
+        config.resolved_attacker_strategies()
+        if hasattr(config, "resolved_attacker_strategies")
+        else config.attacker_strategies
+    )
+    strategies = []
+    for name, configured_kwargs in configured_strategies.items():
+        strategy_kwargs = dict(configured_kwargs)
+        if hasattr(config, "attacker_model"):
+            strategy_kwargs.setdefault("model_id", config.attacker_model)
+        if hasattr(config, "attacker_config"):
+            strategy_kwargs.setdefault("config", config.attacker_config)
+        if verbose is not None and name in {
+            "race_socioeconomic_label",
+            "language_manipulation",
+            "emotion_manipulation",
+            "cognitive_bias",
+        }:
+            strategy_kwargs.setdefault("verbose", verbose)
+        strategies.append(
+            strategy_getter(
+                strategy_name=name,
+                model_pool=model_pool,
+                **strategy_kwargs,
+            )
         )
-        for name, strategy_kwargs in config.attacker_strategies.items()
-    ]
+    return strategies
 
 
 def load_results_from_json(

@@ -268,14 +268,6 @@ def complement_answer_label_set(
     return frozenset(option_labels - correct_labels)
 
 
-def incorrect_answer_label_set(
-    options: Mapping[str, str],
-    answer: str
-) -> frozenset[str]:
-    """Alias for the labels outside the current correct-answer set."""
-    return complement_answer_label_set(options, answer)
-
-
 def extract_answer_with_quality_check(
     answer: str,
     max_extra_words: int = 5,
@@ -285,7 +277,7 @@ def extract_answer_with_quality_check(
     Extract and normalize answer with quality checking.
 
     Extracts capital letters and checks if the response contains excessive extra text
-    that might indicate the model didn't follow instructions properly.
+    that may indicate a response outside the expected answer format.
 
     Args:
         answer: Answer string from the model

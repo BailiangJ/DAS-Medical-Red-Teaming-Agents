@@ -1,5 +1,3 @@
-from dataclasses import replace
-
 import pytest
 
 from med_red_team.model_pool import ModelPool
@@ -38,25 +36,64 @@ def test_factory_overrides_do_not_mutate_registry():
     assert default.tensor_parallel_size == 2
 
 
-def test_pool_identity_uses_construction_overrides(monkeypatch):
-    created = []
+def test_pool_reuses_default_equivalent_effective_config():
+    default = InfrastructureConfig(tensor_parallel_size=2, max_model_len=8192)
+    previous = ModelFactory._registry
+    ModelFactory.register_models({
+        "dummy": {"class": DummyModel, "kwargs": {"infra_config": default}},
+    })
+    try:
+        pool = ModelPool()
+        implicit = pool.get_model("dummy")
+        explicit = pool.get_model(
+            "dummy",
+            tensor_parallel_size=2,
+            max_model_len=8192,
+        )
+    finally:
+        pool.clear()
+        ModelFactory.register_models(previous)
 
-    def create(model_id, **kwargs):
-        model = DummyModel(model_id, **kwargs)
-        created.append(model)
-        return model
+    assert implicit is explicit
 
-    monkeypatch.setattr(ModelFactory, "create", create)
-    pool = ModelPool()
 
-    first = pool.get_model("dummy", seed=1)
-    same = pool.get_model("dummy", seed=1)
-    different = pool.get_model("dummy", seed=2)
+def test_factory_rejects_mixed_full_and_scalar_infrastructure_overrides():
+    previous = ModelFactory._registry
+    ModelFactory.register_models({
+        "dummy": {
+            "class": DummyModel,
+            "kwargs": {"infra_config": InfrastructureConfig()},
+        },
+    })
+    try:
+        with pytest.raises(ValueError, match="infra_config"):
+            ModelFactory.create(
+                "dummy",
+                infra_config=InfrastructureConfig(tensor_parallel_size=4),
+                tensor_parallel_size=2,
+            )
+    finally:
+        ModelFactory.register_models(previous)
 
-    assert first is same
-    assert different is not first
-    assert len(created) == 2
-    assert pool.is_loaded("dummy", seed=1)
+
+def test_pool_identity_uses_construction_overrides():
+    previous = ModelFactory._registry
+    ModelFactory.register_models({
+        "dummy": {"class": DummyModel, "kwargs": {}},
+    })
+    try:
+        pool = ModelPool()
+        first = pool.get_model("dummy", endpoint="one")
+        same = pool.get_model("dummy", endpoint="one")
+        different = pool.get_model("dummy", endpoint="two")
+
+        assert first is same
+        assert different is not first
+        assert len(pool) == 2
+        assert pool.is_loaded("dummy", endpoint="one")
+    finally:
+        pool.clear()
+        ModelFactory.register_models(previous)
 
 
 def test_pool_rejects_generation_settings():
@@ -64,13 +101,35 @@ def test_pool_rejects_generation_settings():
         ModelPool().get_model("dummy", temperature=0.2)
 
 
-def test_pool_clear_calls_close(monkeypatch):
-    model = DummyModel("dummy")
-    monkeypatch.setattr(ModelFactory, "create", lambda model_id, **kwargs: model)
-    pool = ModelPool()
-    pool.get_model("dummy")
-
-    pool.clear()
+def test_pool_clear_calls_close():
+    previous = ModelFactory._registry
+    ModelFactory.register_models({
+        "dummy": {"class": DummyModel, "kwargs": {}},
+    })
+    try:
+        pool = ModelPool()
+        model = pool.get_model("dummy")
+        pool.clear()
+    finally:
+        ModelFactory.register_models(previous)
 
     assert model.closed
     assert len(pool) == 0
+
+
+def test_pool_cache_events_do_not_print(capsys):
+    previous = ModelFactory._registry
+    ModelFactory.register_models({
+        "dummy": {"class": DummyModel, "kwargs": {}},
+    })
+    try:
+        pool = ModelPool()
+        pool.get_model("dummy")
+        pool.get_model("dummy")
+        pool.clear()
+    finally:
+        ModelFactory.register_models(previous)
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""

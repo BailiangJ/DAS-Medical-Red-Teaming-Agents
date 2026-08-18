@@ -1,5 +1,6 @@
 """Explicit loading for axis-owned Python configuration presets."""
 
+from copy import deepcopy
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
@@ -7,6 +8,36 @@ from typing import TypeVar
 
 
 ConfigT = TypeVar("ConfigT")
+
+
+def clone_config(config: ConfigT) -> ConfigT:
+    """Return an independent config instance without sharing preset state."""
+    to_dict = getattr(config, "to_dict", None)
+    from_dict = getattr(type(config), "from_dict", None)
+    if callable(to_dict) and callable(from_dict):
+        return from_dict(to_dict())
+    return deepcopy(config)
+
+
+def validate_sample_limit(value: int | None) -> int | None:
+    """Validate the common ``None``/zero/positive sample-limit contract."""
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"Sample limit must be an integer or None, got {value!r}")
+    if value < 0:
+        raise ValueError(f"Sample limit must be non-negative, got {value}")
+    return value
+
+
+def resolve_sample_limit(
+    cli_value: int | None,
+    config_value: int | None,
+) -> int | None:
+    """Resolve an explicit CLI limit before the selected config value."""
+    return validate_sample_limit(
+        cli_value if cli_value is not None else config_value
+    )
 
 
 def _load_module(path: Path) -> ModuleType:
@@ -35,4 +66,4 @@ def load_config(path: str | Path, expected_type: type[ConfigT]) -> ConfigT:
             f"CONFIG in {config_path} must be {expected_type.__name__}, "
             f"got {type(config).__name__}"
         )
-    return config
+    return clone_config(config)

@@ -8,7 +8,6 @@ This module defines the interfaces that all actors must implement:
 """
 
 from abc import ABC, abstractmethod
-from optparse import Option
 from typing import Dict, Any, Optional
 
 from med_red_team.models import ModelResponse, GenerationConfig
@@ -255,12 +254,6 @@ class AttackStrategy(ABC):
                 strategy_dict["config"] = asdict(self.config)
             elif hasattr(self.config, 'to_dict'):
                 strategy_dict["config"] = self.config.to_dict()
-
-        # Add any additional instance-specific attributes
-        # Child classes can override to add more fields
-        for attr in ['num_distractors', 'n_bias_styles']:
-            if hasattr(self, attr):
-                strategy_dict[attr] = getattr(self, attr)
 
         return strategy_dict
 

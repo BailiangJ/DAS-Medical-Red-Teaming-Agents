@@ -1,11 +1,16 @@
 import pytest
 
 from med_red_team.shared.parsing import (
+    StructuredOutputError,
     extract_json_object,
     parse_bool,
+    parse_finite_float,
+    parse_int,
     parse_json_dict,
+    parse_string,
     parse_typed_json,
 )
+from med_red_team.utils import parse_json_response
 
 
 def test_extracts_json_from_fenced_or_surrounding_text():
@@ -31,7 +36,37 @@ def test_typed_validation_remains_caller_owned():
 
 
 def test_rejects_missing_or_unterminated_object():
-    with pytest.raises(ValueError):
+    with pytest.raises(StructuredOutputError):
         extract_json_object("no object")
-    with pytest.raises(ValueError):
+    with pytest.raises(StructuredOutputError):
         extract_json_object('{"broken": true')
+
+
+def test_strict_primitive_parsers_reject_python_coercions():
+    assert parse_string("answer") == "answer"
+    assert parse_int(3) == 3
+    assert parse_finite_float(3) == 3.0
+
+    with pytest.raises(StructuredOutputError):
+        parse_string(["answer"])
+    with pytest.raises(StructuredOutputError):
+        parse_int(True)
+    with pytest.raises(StructuredOutputError):
+        parse_finite_float(False)
+    with pytest.raises(StructuredOutputError):
+        parse_finite_float(float("nan"))
+    with pytest.raises(StructuredOutputError):
+        parse_finite_float(float("inf"))
+
+
+def test_json_field_validation_does_not_coerce_malformed_values():
+    with pytest.raises(StructuredOutputError):
+        parse_json_response(
+            '{"modified_prompt": ["not", "a", "string"]}',
+            expected_fields={"modified_prompt": str},
+        )
+    with pytest.raises(StructuredOutputError):
+        parse_json_response(
+            '{"violation": true}',
+            expected_fields={"violation": float},
+        )

@@ -1,11 +1,16 @@
 """Shared mechanics for parsing structured LLM output."""
 
 import json
+import math
 import re
 from typing import Any, Callable, TypeVar
 
 
 ParsedT = TypeVar("ParsedT")
+
+
+class StructuredOutputError(ValueError):
+    """Raised when model output cannot satisfy the requested structure."""
 
 
 def strip_markdown_fences(text: str) -> str:
@@ -20,7 +25,7 @@ def extract_json_object(text: str) -> str:
     value = strip_markdown_fences(text)
     start = value.find("{")
     if start < 0:
-        raise ValueError("No JSON object found in model response")
+        raise StructuredOutputError("No JSON object found in model response")
 
     depth = 0
     in_string = False
@@ -43,13 +48,18 @@ def extract_json_object(text: str) -> str:
             depth -= 1
             if depth == 0:
                 return value[start:index + 1]
-    raise ValueError("Unterminated JSON object in model response")
+    raise StructuredOutputError("Unterminated JSON object in model response")
 
 
 def parse_json_dict(text: str) -> dict[str, Any]:
-    value = json.loads(extract_json_object(text))
+    try:
+        value = json.loads(extract_json_object(text))
+    except json.JSONDecodeError as exc:
+        raise StructuredOutputError(f"Invalid JSON object: {exc.msg}") from exc
     if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object, got {type(value).__name__}")
+        raise StructuredOutputError(
+            f"Expected a JSON object, got {type(value).__name__}"
+        )
     return value
 
 
@@ -63,7 +73,35 @@ def parse_bool(value: Any) -> bool:
             return True
         if normalized == "false":
             return False
-    raise ValueError(f"Expected boolean true/false, got {value!r}")
+    raise StructuredOutputError(
+        f"Expected boolean true/false, got {value!r}"
+    )
+
+
+def parse_string(value: Any, *, non_empty: bool = False) -> str:
+    """Require a real string rather than coercing arbitrary JSON values."""
+    if not isinstance(value, str):
+        raise StructuredOutputError(f"Expected string, got {value!r}")
+    if non_empty and not value.strip():
+        raise StructuredOutputError("Expected a non-empty string")
+    return value
+
+
+def parse_int(value: Any) -> int:
+    """Require a JSON integer while rejecting booleans."""
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise StructuredOutputError(f"Expected integer, got {value!r}")
+    return value
+
+
+def parse_finite_float(value: Any) -> float:
+    """Require a finite real number while rejecting booleans."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise StructuredOutputError(f"Expected finite number, got {value!r}")
+    result = float(value)
+    if not math.isfinite(result):
+        raise StructuredOutputError(f"Expected finite number, got {value!r}")
+    return result
 
 
 def parse_typed_json(text: str, validator: Callable[[dict[str, Any]], ParsedT]) -> ParsedT:

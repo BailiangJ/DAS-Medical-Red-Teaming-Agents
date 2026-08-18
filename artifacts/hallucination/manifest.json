@@ -1,0 +1,1024 @@
+{
+  "bundle_name": "hallucination_release_artifacts",
+  "artifact_root": "artifacts/hallucination",
+  "created_for": "public artifact distribution",
+  "created_at": "2026-07-23",
+  "packaging_policy": {
+    "models_or_detectors_called_during_packaging": false,
+    "raw_private_absolute_paths_in_manifest": false,
+    "raw_logs_copied": false,
+    "copy_policy": "Copy existing JSON byte-for-byte."
+  },
+  "logical_source_roots": {
+    "med-red-team": "Logical source repository label for Hallucination datasets and outputs.",
+    "gitlab-med-red-team": "Logical source repository label for the HealthBench detector output."
+  },
+  "totals": {
+    "stanford_current_dataset_rows": 131,
+    "healthbench_current_dataset_rows": 131,
+    "generated_response_file_count": 15,
+    "generated_response_rows_total": 1965,
+    "generated_response_detection_file_count": 15,
+    "generated_response_detection_rows_total": 1918
+  },
+  "generated_response_detection_denominators": {
+    "claude37_positive": {
+      "actual_evaluation_denominator": 131,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 0
+    },
+    "claude4_positive": {
+      "actual_evaluation_denominator": 129,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 2
+    },
+    "deepseek_r1_positive": {
+      "actual_evaluation_denominator": 126,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 5
+    },
+    "deepseek_v3_positive": {
+      "actual_evaluation_denominator": 129,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 2
+    },
+    "gemini_flash_positive": {
+      "actual_evaluation_denominator": 125,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 6
+    },
+    "gemini_pro_positive": {
+      "actual_evaluation_denominator": 130,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 1
+    },
+    "gemma_positive": {
+      "actual_evaluation_denominator": 124,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 7
+    },
+    "gpt_4o_positive": {
+      "actual_evaluation_denominator": 130,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 1
+    },
+    "huatuo_positive": {
+      "actual_evaluation_denominator": 131,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 0
+    },
+    "llama_positive": {
+      "actual_evaluation_denominator": 129,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 2
+    },
+    "medgemma_positive": {
+      "actual_evaluation_denominator": 123,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 8
+    },
+    "o3_positive": {
+      "actual_evaluation_denominator": 127,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 4
+    },
+    "o4_mini_positive": {
+      "actual_evaluation_denominator": 131,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 0
+    },
+    "qwen3_positive": {
+      "actual_evaluation_denominator": 130,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 1
+    },
+    "qwq_positive": {
+      "actual_evaluation_denominator": 123,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 8
+    }
+  },
+  "global_known_caveats": [
+    "Generated-response artifacts use Stanford prompt rows.",
+    "Per-model detection coverage is recorded by the denominator fields.",
+    "Bundle membership is defined by manifest.files.",
+    "manifest.json is not self-hashed."
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "4b2623089c77b8f2a27a88a0c7cfdef02111da3d7addfb5476ee7316192563ca",
+      "size_bytes": 1115,
+      "row_count": null,
+      "schema_role": "bundle README: scope, provenance caveats, and validation notes",
+      "model_or_detector_backend": "documentation",
+      "source_path": null,
+      "copy_mode": "generated_documentation",
+      "known_caveats": [
+        "manifest.json defines file hashes, sizes, row counts, and source paths."
+      ]
+    },
+    {
+      "path": "datasets/healthbench_131_negative_cases.json",
+      "sha256": "b28c5a3e9f02c8acc2c6457e4dfaabb76a64046974381ee05b1a349ddf8d2afd",
+      "size_bytes": 336281,
+      "row_count": 131,
+      "schema_role": "dataset: HealthBench negative current subset; list of Prompt/Response records with row_idx and Hallucination/Accuracy label",
+      "model_or_detector_backend": "source dataset; no model or detector backend",
+      "source_path": "med-red-team/hallucination/healthbench_131_negative_cases.json",
+      "source_sha256": "b28c5a3e9f02c8acc2c6457e4dfaabb76a64046974381ee05b1a349ddf8d2afd",
+      "source_size_bytes": 336281,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Current HealthBench negative subset contains 131 rows; the manuscript OpenAI detector output covers 129 of these row_idx values."
+      ]
+    },
+    {
+      "path": "datasets/stanford_redteaming_131_positive_cases.json",
+      "sha256": "d2bf060a1a8deb53d91b84811c4209c26404f46692e4f5fa5887608be88e17f6",
+      "size_bytes": 545224,
+      "row_count": 131,
+      "schema_role": "dataset: Stanford red-teaming positive current subset; list of Prompt/Response records with row_idx and Hallucination/Accuracy label",
+      "model_or_detector_backend": "source dataset; no model or detector backend",
+      "source_path": "med-red-team/hallucination/stanford_redteaming_129_positive_cases.json",
+      "source_sha256": "d2bf060a1a8deb53d91b84811c4209c26404f46692e4f5fa5887608be88e17f6",
+      "source_size_bytes": 545224,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Copied byte-for-byte; source-inherited non-standard NaN values are preserved where present."
+      ]
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/claude37_positive/detailed_outputs.json",
+      "sha256": "f5d5af20355665f96db469534e9b8aa2062038a24b2bef6752bab7896d2da0fb",
+      "size_bytes": 736398,
+      "row_count": 131,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=claude-3-7-sonnet-20250219",
+      "source_path": "med-red-team/hallucination/model_responses_detection/claude37_positive/detailed_outputs.json",
+      "source_sha256": "f5d5af20355665f96db469534e9b8aa2062038a24b2bef6752bab7896d2da0fb",
+      "source_size_bytes": 736398,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "131/131 rows present."
+      ],
+      "detected_response_model_dir": "claude37_positive",
+      "detected_response_models_observed": [
+        "claude-3-7-sonnet-20250219"
+      ],
+      "actual_evaluation_denominator": 131,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 0,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-26T13:19:21.735204",
+        "timestamp_max": "2025-06-26T13:38:48.565333",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/claude4_positive/detailed_outputs.json",
+      "sha256": "c4d46f7b74d120a1480b907506c4cadd24bb20065010648fdfde014f905e6d17",
+      "size_bytes": 726264,
+      "row_count": 129,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=claude-sonnet-4-20250514",
+      "source_path": "med-red-team/hallucination/model_responses_detection/claude4_positive/detailed_outputs.json",
+      "source_sha256": "c4d46f7b74d120a1480b907506c4cadd24bb20065010648fdfde014f905e6d17",
+      "source_size_bytes": 726264,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "129/131 rows present."
+      ],
+      "detected_response_model_dir": "claude4_positive",
+      "detected_response_models_observed": [
+        "claude-sonnet-4-20250514"
+      ],
+      "actual_evaluation_denominator": 129,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 2,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-26T15:00:19.811803",
+        "timestamp_max": "2025-06-26T15:31:05.289641",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/deepseek_r1_positive/detailed_outputs.json",
+      "sha256": "d5aa17b8ebb240de1f6c935350b93cccb4b9ee4c5f18aa291c3eb457433c66f3",
+      "size_bytes": 905874,
+      "row_count": 126,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=deepseek-reasoner",
+      "source_path": "med-red-team/hallucination/model_responses_detection/deepseek_r1_positive/detailed_outputs.json",
+      "source_sha256": "d5aa17b8ebb240de1f6c935350b93cccb4b9ee4c5f18aa291c3eb457433c66f3",
+      "source_size_bytes": 905874,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "126/131 rows present."
+      ],
+      "detected_response_model_dir": "deepseek_r1_positive",
+      "detected_response_models_observed": [
+        "deepseek-reasoner"
+      ],
+      "actual_evaluation_denominator": 126,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 5,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-26T19:46:51.324444",
+        "timestamp_max": "2025-06-26T22:39:25.271017",
+        "temperature_values_observed": [
+          "1.0"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/deepseek_v3_positive/detailed_outputs.json",
+      "sha256": "0d8f18929dae197d5788b86b6b7e5892f372ab9689c197aeffcb88d7ecb549bc",
+      "size_bytes": 806519,
+      "row_count": 129,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=deepseek-chat",
+      "source_path": "med-red-team/hallucination/model_responses_detection/deepseek_v3_positive/detailed_outputs.json",
+      "source_sha256": "0d8f18929dae197d5788b86b6b7e5892f372ab9689c197aeffcb88d7ecb549bc",
+      "source_size_bytes": 806519,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "129/131 rows present."
+      ],
+      "detected_response_model_dir": "deepseek_v3_positive",
+      "detected_response_models_observed": [
+        "deepseek-chat"
+      ],
+      "actual_evaluation_denominator": 129,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 2,
+      "detection_provenance": {
+        "timestamp_min": "2025-07-02T12:06:15.136552",
+        "timestamp_max": "2025-07-02T13:10:05.015792",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/gemini_flash_positive/detailed_outputs.json",
+      "sha256": "305deb0e4267b23022e4d1e761c1eef8b1fa980ba97695fa450103efccba56a8",
+      "size_bytes": 1011391,
+      "row_count": 125,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=gemini-2.5-flash",
+      "source_path": "med-red-team/hallucination/model_responses_detection/gemini_flash_positive/detailed_outputs.json",
+      "source_sha256": "305deb0e4267b23022e4d1e761c1eef8b1fa980ba97695fa450103efccba56a8",
+      "source_size_bytes": 1011391,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "125/131 rows present."
+      ],
+      "detected_response_model_dir": "gemini_flash_positive",
+      "detected_response_models_observed": [
+        "gemini-2.5-flash"
+      ],
+      "actual_evaluation_denominator": 125,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 6,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-25T17:35:21.813755",
+        "timestamp_max": "2025-06-25T18:15:10.989649",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/gemini_pro_positive/detailed_outputs.json",
+      "sha256": "3edfd5d843a25ef48f0fca50ca9959ad45ba3a7fb52884b47aedd25038e74049",
+      "size_bytes": 1145742,
+      "row_count": 130,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=gemini-2.5-pro",
+      "source_path": "med-red-team/hallucination/model_responses_detection/gemini_pro_positive/detailed_outputs.json",
+      "source_sha256": "3edfd5d843a25ef48f0fca50ca9959ad45ba3a7fb52884b47aedd25038e74049",
+      "source_size_bytes": 1145742,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "130/131 rows present."
+      ],
+      "detected_response_model_dir": "gemini_pro_positive",
+      "detected_response_models_observed": [
+        "gemini-2.5-pro"
+      ],
+      "actual_evaluation_denominator": 130,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 1,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-26T11:41:08.091239",
+        "timestamp_max": "2025-06-26T13:07:00.227430",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/gemma_positive/detailed_outputs.json",
+      "sha256": "d1a11e261f9bb855559a59d95359617327af52b9aaf5d435bdc11c7e552e36c7",
+      "size_bytes": 1121703,
+      "row_count": 124,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=gemma",
+      "source_path": "med-red-team/hallucination/model_responses_detection/gemma_positive/detailed_outputs.json",
+      "source_sha256": "d1a11e261f9bb855559a59d95359617327af52b9aaf5d435bdc11c7e552e36c7",
+      "source_size_bytes": 1121703,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "124/131 rows present."
+      ],
+      "detected_response_model_dir": "gemma_positive",
+      "detected_response_models_observed": [
+        "gemma"
+      ],
+      "actual_evaluation_denominator": 124,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 7,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-18T17:10:06.247099",
+        "timestamp_max": "2025-06-18T18:04:19.646111",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/gpt_4o_positive/detailed_outputs.json",
+      "sha256": "d1555873d3a6f048c2db20246aa0fc7e6f0056bcada71795c355d019e3f9428a",
+      "size_bytes": 691798,
+      "row_count": 130,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=gpt-4o",
+      "source_path": "med-red-team/hallucination/model_responses_detection/gpt_4o_positive/detailed_outputs.json",
+      "source_sha256": "d1555873d3a6f048c2db20246aa0fc7e6f0056bcada71795c355d019e3f9428a",
+      "source_size_bytes": 691798,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "130/131 rows present."
+      ],
+      "detected_response_model_dir": "gpt_4o_positive",
+      "detected_response_models_observed": [
+        "gpt-4o"
+      ],
+      "actual_evaluation_denominator": 130,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 1,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-26T12:05:33.512141",
+        "timestamp_max": "2025-06-26T12:24:02.175869",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/huatuo_positive/detailed_outputs.json",
+      "sha256": "11184b89b268ac946b704e8da1ffb2dd5ebfe590887abcdb4866b5309d9d48d9",
+      "size_bytes": 1023138,
+      "row_count": 131,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=huatuo",
+      "source_path": "med-red-team/hallucination/model_responses_detection/huatuo_positive/detailed_outputs.json",
+      "source_sha256": "11184b89b268ac946b704e8da1ffb2dd5ebfe590887abcdb4866b5309d9d48d9",
+      "source_size_bytes": 1023138,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "131/131 rows present."
+      ],
+      "detected_response_model_dir": "huatuo_positive",
+      "detected_response_models_observed": [
+        "huatuo"
+      ],
+      "actual_evaluation_denominator": 131,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 0,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-23T11:05:22.741426",
+        "timestamp_max": "2025-06-23T12:23:14.765498",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/llama_positive/detailed_outputs.json",
+      "sha256": "febbb34007f6544ef182ac51aa41ab868967de8143acc8faade444d1386dd768",
+      "size_bytes": 828991,
+      "row_count": 129,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=llama",
+      "source_path": "med-red-team/hallucination/model_responses_detection/llama_positive/detailed_outputs.json",
+      "source_sha256": "febbb34007f6544ef182ac51aa41ab868967de8143acc8faade444d1386dd768",
+      "source_size_bytes": 828991,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "129/131 rows present."
+      ],
+      "detected_response_model_dir": "llama_positive",
+      "detected_response_models_observed": [
+        "llama"
+      ],
+      "actual_evaluation_denominator": 129,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 2,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-20T19:56:07.634834",
+        "timestamp_max": "2025-06-20T20:11:39.903964",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/medgemma_positive/detailed_outputs.json",
+      "sha256": "21a7cd4a15a8ffe26caf7095259de5d96e0ecd0abae99391ab7dd38342e91948",
+      "size_bytes": 1328448,
+      "row_count": 123,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=medgemma",
+      "source_path": "med-red-team/hallucination/model_responses_detection/medgemma_positive/detailed_outputs.json",
+      "source_sha256": "21a7cd4a15a8ffe26caf7095259de5d96e0ecd0abae99391ab7dd38342e91948",
+      "source_size_bytes": 1328448,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "123/131 rows present."
+      ],
+      "detected_response_model_dir": "medgemma_positive",
+      "detected_response_models_observed": [
+        "medgemma"
+      ],
+      "actual_evaluation_denominator": 123,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 8,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-18T13:58:36.239871",
+        "timestamp_max": "2025-06-18T15:08:34.852622",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/o3_positive/detailed_outputs.json",
+      "sha256": "9132a54b5f6bbf76c407b66435aac9f51aabc904ba20f036552466a388e92752",
+      "size_bytes": 897999,
+      "row_count": 127,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=o3",
+      "source_path": "med-red-team/hallucination/model_responses_detection/o3_positive/detailed_outputs.json",
+      "source_sha256": "9132a54b5f6bbf76c407b66435aac9f51aabc904ba20f036552466a388e92752",
+      "source_size_bytes": 897999,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "127/131 rows present."
+      ],
+      "detected_response_model_dir": "o3_positive",
+      "detected_response_models_observed": [
+        "o3"
+      ],
+      "actual_evaluation_denominator": 127,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 4,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-26T13:14:37.921422",
+        "timestamp_max": "2025-06-26T14:25:59.921445",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/o4_mini_positive/detailed_outputs.json",
+      "sha256": "caac98e3665c99384fa1e6e50f72ff7767c36795f7d35c078547f48e46362ae8",
+      "size_bytes": 793324,
+      "row_count": 131,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=o4-mini",
+      "source_path": "med-red-team/hallucination/model_responses_detection/o4_mini_positive/detailed_outputs.json",
+      "source_sha256": "caac98e3665c99384fa1e6e50f72ff7767c36795f7d35c078547f48e46362ae8",
+      "source_size_bytes": 793324,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "131/131 rows present."
+      ],
+      "detected_response_model_dir": "o4_mini_positive",
+      "detected_response_models_observed": [
+        "o4-mini"
+      ],
+      "actual_evaluation_denominator": 131,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 0,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-26T12:29:13.509396",
+        "timestamp_max": "2025-06-26T13:11:41.449877",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/qwen3_positive/detailed_outputs.json",
+      "sha256": "8a45b239c6daeebf2bf928a37af256b23509d97e29537787e076b84b0b8e6236",
+      "size_bytes": 1410152,
+      "row_count": 130,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=qwen3",
+      "source_path": "med-red-team/hallucination/model_responses_detection/qwen3_positive/detailed_outputs.json",
+      "source_sha256": "8a45b239c6daeebf2bf928a37af256b23509d97e29537787e076b84b0b8e6236",
+      "source_size_bytes": 1410152,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "130/131 rows present."
+      ],
+      "detected_response_model_dir": "qwen3_positive",
+      "detected_response_models_observed": [
+        "qwen3"
+      ],
+      "actual_evaluation_denominator": 130,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 1,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-18T18:13:02.277690",
+        "timestamp_max": "2025-06-18T19:32:53.184950",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_response_detection/openai_gpt4o_o3/qwq_positive/detailed_outputs.json",
+      "sha256": "9ab05bf9b51d332acfeff02abf8ddf0b820d20fd564e4ad352741c379a377c0d",
+      "size_bytes": 1434099,
+      "row_count": 123,
+      "schema_role": "generated-response detector output: OpenAI GPT-4o/O3 detector applied to Stanford-positive generated responses",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 generated-response detector; detected_response_model=qwq",
+      "source_path": "med-red-team/hallucination/model_responses_detection/qwq_positive/detailed_outputs.json",
+      "source_sha256": "9ab05bf9b51d332acfeff02abf8ddf0b820d20fd564e4ad352741c379a377c0d",
+      "source_size_bytes": 1434099,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "123/131 rows present."
+      ],
+      "detected_response_model_dir": "qwq_positive",
+      "detected_response_models_observed": [
+        "qwq"
+      ],
+      "actual_evaluation_denominator": 123,
+      "expected_source_response_count": 131,
+      "missing_from_detection_count": 8,
+      "detection_provenance": {
+        "timestamp_min": "2025-06-18T19:43:45.742866",
+        "timestamp_max": "2025-06-18T21:15:22.916787",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_claude-3-7-sonnet-20250219_20250626_133848.json",
+      "sha256": "fa5921ec2d76f7759daaf6ca72be09acb77d084b36982ec4f08f002949ff0def",
+      "size_bytes": 493561,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "claude-3-7-sonnet-20250219",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_claude-3-7-sonnet-20250219_20250626_133848.json",
+      "source_sha256": "fa5921ec2d76f7759daaf6ca72be09acb77d084b36982ec4f08f002949ff0def",
+      "source_size_bytes": 493561,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-26T13:19:21.735204",
+        "timestamp_max": "2025-06-26T13:38:48.565333",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_claude-sonnet-4-20250514_20250626_153105.json",
+      "sha256": "2a0f692ded6b3e7fc7a5e45720d0808655e178486ab37f2ca276fb0456d2a367",
+      "size_bytes": 507479,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "claude-sonnet-4-20250514",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_claude-sonnet-4-20250514_20250626_153105.json",
+      "source_sha256": "2a0f692ded6b3e7fc7a5e45720d0808655e178486ab37f2ca276fb0456d2a367",
+      "source_size_bytes": 507479,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-26T15:00:19.811803",
+        "timestamp_max": "2025-06-26T15:31:05.289641",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_deepseek-chat_20250702_131005.json",
+      "sha256": "551e06ffc18dea85a57ac9ff7fe64b57d7e485d3fbaaac7d0522ceec1dd9d878",
+      "size_bytes": 576848,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "deepseek-chat",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_deepseek-chat_20250702_131005.json",
+      "source_sha256": "551e06ffc18dea85a57ac9ff7fe64b57d7e485d3fbaaac7d0522ceec1dd9d878",
+      "source_size_bytes": 576848,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-07-02T12:06:15.136552",
+        "timestamp_max": "2025-07-02T13:10:05.015792",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_deepseek-reasoner_20250626_223925.json",
+      "sha256": "e96077037e9ef229350a2820a144c02a9b3857ca26e9536e342f070fbc160933",
+      "size_bytes": 704837,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "deepseek-reasoner",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_deepseek-reasoner_20250626_223925.json",
+      "source_sha256": "e96077037e9ef229350a2820a144c02a9b3857ca26e9536e342f070fbc160933",
+      "source_size_bytes": 704837,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-26T19:46:51.324444",
+        "timestamp_max": "2025-06-26T22:39:25.271017",
+        "temperature_values_observed": [
+          "1.0"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_gemini-2.5-flash_20250625_181510.json",
+      "sha256": "02d0c329c2f8b994137b1c3622a1fc73d9776d10ba3cc7688b425022a3c5c9a3",
+      "size_bytes": 962390,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "gemini-2.5-flash",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_gemini-2.5-flash_20250625_181510.json",
+      "source_sha256": "02d0c329c2f8b994137b1c3622a1fc73d9776d10ba3cc7688b425022a3c5c9a3",
+      "source_size_bytes": 962390,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-25T17:35:21.813755",
+        "timestamp_max": "2025-06-25T18:15:10.989649",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_gemini-2.5-pro_20250626_130700.json",
+      "sha256": "d8afbfa1dfb38ad42ba288db7a1af1a670c94069f691a3b67496e38c95310e80",
+      "size_bytes": 956562,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "gemini-2.5-pro",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_gemini-2.5-pro_20250626_130700.json",
+      "source_sha256": "d8afbfa1dfb38ad42ba288db7a1af1a670c94069f691a3b67496e38c95310e80",
+      "source_size_bytes": 956562,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-26T11:41:08.091239",
+        "timestamp_max": "2025-06-26T13:07:00.227430",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_gemma_20250618_180419.json",
+      "sha256": "9a87736b864be62cc88681b75916d5f7678d6248d277541beb36c3a997b5e093",
+      "size_bytes": 953051,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "gemma",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_gemma_20250618_180419.json",
+      "source_sha256": "9a87736b864be62cc88681b75916d5f7678d6248d277541beb36c3a997b5e093",
+      "source_size_bytes": 953051,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-18T17:10:06.247099",
+        "timestamp_max": "2025-06-18T18:04:19.646111",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_gpt-4o_20250626_122402.json",
+      "sha256": "eb42eac18abb76af5d834911a33b7ae17cd0d192749a2c0770bf2e798753344b",
+      "size_bytes": 465605,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "gpt-4o",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_gpt-4o_20250626_122402.json",
+      "source_sha256": "eb42eac18abb76af5d834911a33b7ae17cd0d192749a2c0770bf2e798753344b",
+      "source_size_bytes": 465605,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-26T12:05:33.512141",
+        "timestamp_max": "2025-06-26T12:24:02.175869",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_huatuo_20250623_122314.json",
+      "sha256": "499da6d1fedbbb3ed65b582bc398506e388c35f45c6b8ec78d822f57ad6ad198",
+      "size_bytes": 784063,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "huatuo",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_huatuo_20250623_122314.json",
+      "source_sha256": "499da6d1fedbbb3ed65b582bc398506e388c35f45c6b8ec78d822f57ad6ad198",
+      "source_size_bytes": 784063,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-23T11:05:22.741426",
+        "timestamp_max": "2025-06-23T12:23:14.765498",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_llama_20250620_201139.json",
+      "sha256": "d52b8c208e771be78f1fba7c514ea407b5ebc10e24a1a3e90faffe6107ccfebe",
+      "size_bytes": 604048,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "llama",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_llama_20250620_201139.json",
+      "source_sha256": "d52b8c208e771be78f1fba7c514ea407b5ebc10e24a1a3e90faffe6107ccfebe",
+      "source_size_bytes": 604048,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-20T19:56:07.634834",
+        "timestamp_max": "2025-06-20T20:11:39.903964",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_medgemma_20250618_150834.json",
+      "sha256": "7bb9a6d9c1f5cbb43b3eecea09fce457d475799ffeef3596d7a9bb736996cb85",
+      "size_bytes": 1214026,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "medgemma",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_medgemma_20250618_150834.json",
+      "source_sha256": "7bb9a6d9c1f5cbb43b3eecea09fce457d475799ffeef3596d7a9bb736996cb85",
+      "source_size_bytes": 1214026,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-18T13:58:36.239871",
+        "timestamp_max": "2025-06-18T15:08:34.852622",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_o3_20250626_142559.json",
+      "sha256": "497ec1c5d4739e3e056d89f70016c8cb51aa4d73e639368dc06be0c8783bd754",
+      "size_bytes": 697581,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "o3",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_o3_20250626_142559.json",
+      "source_sha256": "497ec1c5d4739e3e056d89f70016c8cb51aa4d73e639368dc06be0c8783bd754",
+      "source_size_bytes": 697581,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-26T13:14:37.921422",
+        "timestamp_max": "2025-06-26T14:25:59.921445",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_o4-mini_20250626_131141.json",
+      "sha256": "8e459a0afcbcee111dcce2db7576c520899e4df61c22fe002159ea972fbacb8d",
+      "size_bytes": 549553,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "o4-mini",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_o4-mini_20250626_131141.json",
+      "source_sha256": "8e459a0afcbcee111dcce2db7576c520899e4df61c22fe002159ea972fbacb8d",
+      "source_size_bytes": 549553,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-26T12:29:13.509396",
+        "timestamp_max": "2025-06-26T13:11:41.449877",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_qwen3_20250618_193253.json",
+      "sha256": "340d2bd6f5759d13739d3fb6de5cd4e8150def000261b45f0895cef0e830750a",
+      "size_bytes": 1170964,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "qwen3",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_qwen3_20250618_193253.json",
+      "source_sha256": "340d2bd6f5759d13739d3fb6de5cd4e8150def000261b45f0895cef0e830750a",
+      "source_size_bytes": 1170964,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-18T18:13:02.277690",
+        "timestamp_max": "2025-06-18T19:32:53.184950",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "generated_responses/stanford_positive_131/results_qwq_20250618_211522.json",
+      "sha256": "df897c906d2320a331c186401b2215c8f60d432acc43a86a6a9d7eef581b413e",
+      "size_bytes": 1308126,
+      "row_count": 131,
+      "schema_role": "generated model responses: Stanford positive 131 prompts; JSON object with results and statistics",
+      "model_or_detector_backend": "qwq",
+      "source_path": "med-red-team/hallucination/model_responses_stanford_positive/results_qwq_20250618_211522.json",
+      "source_sha256": "df897c906d2320a331c186401b2215c8f60d432acc43a86a6a9d7eef581b413e",
+      "source_size_bytes": 1308126,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Stanford-positive generated responses.",
+        "Byte-for-byte source copy."
+      ],
+      "generated_response_role": "stanford_positive_131_only",
+      "generation_provenance": {
+        "timestamp_min": "2025-06-18T19:43:45.742866",
+        "timestamp_max": "2025-06-18T21:15:22.916787",
+        "temperature_values_observed": [
+          "0.7"
+        ]
+      }
+    },
+    {
+      "path": "native_detector/cross_vendor_claude/healthbench_negative_131/detailed_outputs.json",
+      "sha256": "8164a78fa945d5c2ab916678f9b50419d4bf88690572c4c1ea43d9ed71e63cc0",
+      "size_bytes": 563997,
+      "row_count": 131,
+      "schema_role": "detector output: HealthBench negative current subset with merged_codes, rationale, and agent_decisions appended to source records",
+      "model_or_detector_backend": "Claude Sonnet hallucination detector output via Claude Agent SDK/Claude Code CLI",
+      "source_path": "med-red-team/hallucination_claude/claude_sonnet_negative_exp0/detailed_outputs.json",
+      "source_sha256": "8164a78fa945d5c2ab916678f9b50419d4bf88690572c4c1ea43d9ed71e63cc0",
+      "source_size_bytes": 563997,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "131/131 HealthBench rows present.",
+        "Run metadata is recorded in provenance.json."
+      ]
+    },
+    {
+      "path": "native_detector/cross_vendor_claude/provenance.json",
+      "sha256": "164226ef884a0d3792312cef3a4c85249dc64a6b837d08fb79a789c269f88389",
+      "size_bytes": 2388,
+      "row_count": null,
+      "schema_role": "provenance metadata for Claude comparative detector outputs",
+      "model_or_detector_backend": "Claude Agent SDK/Claude Code CLI run metadata",
+      "source_path": null,
+      "copy_mode": "derived_metadata_from_logs_without_raw_log_copy",
+      "known_caveats": [
+        "Run metadata for bundled Claude detector outputs.",
+        "Remote model identifier field: unavailable."
+      ],
+      "raw_logs_copied": false
+    },
+    {
+      "path": "native_detector/cross_vendor_claude/stanford_positive_131/detailed_outputs.json",
+      "sha256": "4e3a88639320abafda1208206cf29954b96c982e69893dca468c073ab5762e45",
+      "size_bytes": 789653,
+      "row_count": 131,
+      "schema_role": "detector output: Stanford positive current subset with merged_codes, rationale, and agent_decisions appended to source records",
+      "model_or_detector_backend": "Claude Sonnet hallucination detector output via Claude Agent SDK/Claude Code CLI",
+      "source_path": "med-red-team/hallucination_claude/claude_sonnet_positive_exp0/detailed_outputs.json",
+      "source_sha256": "4e3a88639320abafda1208206cf29954b96c982e69893dca468c073ab5762e45",
+      "source_size_bytes": 789653,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "131/131 Stanford rows present.",
+        "Run metadata is recorded in provenance.json."
+      ]
+    },
+    {
+      "path": "native_detector/openai_gpt4o_o3/healthbench_negative_manuscript_129/detailed_outputs.json",
+      "sha256": "ab1a63d3756b9be0fd238457ff8afa4e1f50fbac2318a529e6f5ca1bed0c09da",
+      "size_bytes": 548688,
+      "row_count": 129,
+      "schema_role": "native detector output: HealthBench negative manuscript subset with merged_codes, rationale, and agent_decisions appended to source records",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 hallucination detector output",
+      "source_path": "gitlab-med-red-team/agent_outputs/4o_o3_healthbench_exp3/detailed_outputs.json",
+      "source_sha256": "ab1a63d3756b9be0fd238457ff8afa4e1f50fbac2318a529e6f5ca1bed0c09da",
+      "source_size_bytes": 548688,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Covers 129 of the 131 row_idx values in the current HealthBench negative dataset; excluded row_idx are 8 and 129."
+      ]
+    },
+    {
+      "path": "native_detector/openai_gpt4o_o3/stanford_positive_131/detailed_outputs.json",
+      "sha256": "b9c720569d37e27f18f92a29eba79fac0d69275076e7fb072a53795f10e434af",
+      "size_bytes": 785412,
+      "row_count": 131,
+      "schema_role": "native detector output: Stanford positive current subset with merged_codes, rationale, and agent_decisions appended to source records",
+      "model_or_detector_backend": "OpenAI GPT-4o/O3 hallucination detector output",
+      "source_path": "med-red-team/hallucination/4o_o3_positive_exp/detailed_outputs.json",
+      "source_sha256": "b9c720569d37e27f18f92a29eba79fac0d69275076e7fb072a53795f10e434af",
+      "source_size_bytes": 785412,
+      "copy_mode": "byte_for_byte_copy",
+      "known_caveats": [
+        "Primary native detector output has 131 rows, but row order differs from the copied current Stanford dataset; compare by row_idx."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "purpose": "Run metadata for bundled Claude detector outputs.",
+  "pipeline_label": "MedFactCheck pipeline start (Claude Agent SDK)",
+  "runtime": "Claude Agent SDK/Claude Code CLI.",
+  "runs": [
+    {
+      "artifact_path": "native_detector/cross_vendor_claude/stanford_positive_131/detailed_outputs.json",
+      "dataset_role": "Stanford positive detector output",
+      "source_output_path": "med-red-team/hallucination_claude/claude_sonnet_positive_exp0/detailed_outputs.json",
+      "output_rows": 131,
+      "output_sha256": "4e3a88639320abafda1208206cf29954b96c982e69893dca468c073ab5762e45",
+      "log_summary": {
+        "source_log_path": "med-red-team/hallucination_claude/claude_sonnet_positive_exp0/pipeline.log",
+        "raw_log_copied": false,
+        "observed_started_at": "2025-12-07T21:11:25",
+        "observed_ended_at": "2025-12-17T12:01:49",
+        "line_count": 6889,
+        "level_counts": {
+          "ERROR": 158,
+          "INFO": 3774
+        },
+        "processed_row_events": 132,
+        "unique_processed_row_idx_count": 131,
+        "parse_error_events": 54,
+        "unique_parse_error_row_idx_count": 38
+      },
+      "known_caveats": [
+        "Log summary contains counts and timestamps."
+      ]
+    },
+    {
+      "artifact_path": "native_detector/cross_vendor_claude/healthbench_negative_131/detailed_outputs.json",
+      "dataset_role": "HealthBench negative detector output",
+      "source_output_path": "med-red-team/hallucination_claude/claude_sonnet_negative_exp0/detailed_outputs.json",
+      "output_rows": 131,
+      "output_sha256": "8164a78fa945d5c2ab916678f9b50419d4bf88690572c4c1ea43d9ed71e63cc0",
+      "log_summary": {
+        "source_log_path": "med-red-team/hallucination_claude/claude_sonnet_negative_exp0/pipeline.log",
+        "raw_log_copied": false,
+        "observed_started_at": "2025-12-09T19:28:11",
+        "observed_ended_at": "2025-12-10T23:29:19",
+        "line_count": 7753,
+        "level_counts": {
+          "ERROR": 102,
+          "INFO": 4043
+        },
+        "processed_row_events": 133,
+        "unique_processed_row_idx_count": 131,
+        "parse_error_events": 35,
+        "unique_parse_error_row_idx_count": 28
+      },
+      "known_caveats": [
+        "Log summary contains counts and timestamps."
+      ]
+    }
+  ],
+  "global_caveats": [
+    "Remote model identifier field: unavailable."
+  ]
+}

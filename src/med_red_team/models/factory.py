@@ -35,6 +35,16 @@ class ModelFactory:
     
     # This will be populated by importing from registry.py
     _registry: Dict[str, Dict[str, Any]] = {}
+    _INFRA_ATTRS = {
+        "gpu_memory_utilization",
+        "tensor_parallel_size",
+        "max_model_len",
+        "max_num_seqs",
+        "dtype",
+        "enable_tf32",
+        "quantization",
+        "seed",
+    }
     
     @classmethod
     def register_models(cls, registry: Dict[str, Dict[str, Any]]) -> None:
@@ -58,6 +68,25 @@ class ModelFactory:
             raise ValueError(f"Invalid model class reference: {model_class}")
         module = import_module(module_name)
         return getattr(module, class_name)
+
+    @classmethod
+    def resolve_constructor(
+        cls,
+        model_id: str,
+        **override_kwargs: Any,
+    ) -> tuple[type[LLMInterface], Dict[str, Any]]:
+        """Resolve a model class and its effective construction configuration."""
+        if not cls.is_registered(model_id):
+            raise ModelNotFoundError(
+                f"Model '{model_id}' not found in registry. "
+                f"Available models: {list(cls._registry.keys())}"
+            )
+
+        config = cls._registry[model_id]
+        model_class = cls._resolve_model_class(config["class"])
+        default_kwargs = deepcopy(config["kwargs"])
+        final_kwargs = cls._merge_kwargs(default_kwargs, override_kwargs)
+        return model_class, final_kwargs
 
     @classmethod
     def create(cls, model_id: str, **override_kwargs: Any) -> LLMInterface:
@@ -88,21 +117,10 @@ class ModelFactory:
             # API model (overrides typically not needed)
             model = ModelFactory.create("gpt-4o")
         """
-        if not cls.is_registered(model_id):
-            raise ModelNotFoundError(
-                f"Model '{model_id}' not found in registry. "
-                f"Available models: {list(cls._registry.keys())}"
-            )
-
-        config = cls._registry[model_id]
-        model_class = cls._resolve_model_class(config["class"])
-        # Registry entries are process-global. Deep-copy nested dataclasses so
-        # per-run infrastructure overrides cannot mutate later creations.
-        default_kwargs = deepcopy(config["kwargs"])
-
-        # Merge: defaults + overrides
-        final_kwargs = cls._merge_kwargs(default_kwargs, override_kwargs)
-
+        model_class, final_kwargs = cls.resolve_constructor(
+            model_id,
+            **override_kwargs,
+        )
         return model_class(model_id=model_id, **final_kwargs)
     
     @classmethod
@@ -127,44 +145,42 @@ class ModelFactory:
             
             Result: InfrastructureConfig.gpu_memory_utilization = 0.95
         """
-        merged = defaults.copy()
-        
-        # Infrastructure config attribute names
-        infra_attrs = {
-            "gpu_memory_utilization",
-            "tensor_parallel_size",
-            "max_model_len",
-            "max_num_seqs",
-            "dtype",
-            "enable_tf32",
-            "quantization",
-            "seed"
+        merged = deepcopy(defaults)
+        copied_overrides = deepcopy(overrides)
+        infra_overrides = {
+            key: value
+            for key, value in copied_overrides.items()
+            if key in cls._INFRA_ATTRS
         }
-        
-        # Check if we have an infra_config object and infra overrides
-        if "infra_config" in merged:
-            infra_overrides = {
-                k: v for k, v in overrides.items() if k in infra_attrs
-            }
-            
-            if infra_overrides:
-                # Update the InfrastructureConfig instance
-                infra_config = merged["infra_config"]
-                for key, value in infra_overrides.items():
-                    setattr(infra_config, key, value)
-                
-                # Remove infra overrides from remaining overrides
-                remaining_overrides = {
-                    k: v for k, v in overrides.items() if k not in infra_attrs
-                }
-                merged.update(remaining_overrides)
-            else:
-                # No infra overrides, just merge directly
-                merged.update(overrides)
-        else:
-            # No infra_config in defaults, direct merge
-            merged.update(overrides)
-        
+        full_infra_override = copied_overrides.get("infra_config")
+
+        if full_infra_override is not None and infra_overrides:
+            raise ValueError(
+                "Pass either infra_config or scalar infrastructure overrides, "
+                "not both."
+            )
+        if full_infra_override is not None and "infra_config" not in merged:
+            raise ValueError("infra_config is not supported for this model.")
+
+        if infra_overrides:
+            if "infra_config" not in merged:
+                names = ", ".join(sorted(infra_overrides))
+                raise ValueError(
+                    f"Infrastructure overrides ({names}) are not supported "
+                    "for this model."
+                )
+            infra_config = merged["infra_config"]
+            if not isinstance(infra_config, InfrastructureConfig):
+                raise TypeError("Registered infra_config must be InfrastructureConfig")
+            for key, value in infra_overrides.items():
+                setattr(infra_config, key, value)
+
+        remaining_overrides = {
+            key: value
+            for key, value in copied_overrides.items()
+            if key not in cls._INFRA_ATTRS
+        }
+        merged.update(remaining_overrides)
         return merged
     
     @classmethod

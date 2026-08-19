@@ -57,38 +57,13 @@ The `python -m scripts...` commands are source-tree tools. They require a reposi
 
 ## Installation
 
-Python 3.10 or newer is required.
-
-For development, source-tree runners, presets, documentation, and included artifacts, install from a checkout:
+Python 3.10 or newer is required. Install the full framework from a checkout:
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,api,hallucination,hallucination-claude,analysis,open-source]"
 ```
 
-Install API-provider integrations only when needed:
-
-```bash
-python -m pip install -e ".[api]"
-```
-
-Hallucination artifact validation and summarization are offline. Live hallucination response generation or OpenAI detector execution requires the hallucination extra; Claude detector execution is an explicit opt-in:
-
-```bash
-python -m pip install -e ".[hallucination]"
-python -m pip install -e ".[hallucination-claude]"
-```
-
-Optional statistical analyses for manuscript checks use the analysis extra:
-
-```bash
-python -m pip install -e ".[analysis]"
-```
-
-For local open-source models, install the runtime extra appropriate to your hardware:
-
-```bash
-python -m pip install -e ".[open-source]"
-```
+This installs the package together with development tooling, API-provider integrations, hallucination detector backends, statistical-analysis dependencies, and local open-source model runtimes.
 
 ## Data and artifacts
 
@@ -98,7 +73,7 @@ The relevant public dataset is available on Hugging Face:
 
 Most source datasets are not redistributed directly in this repository. Users should obtain authorized dataset copies, check current terms, document provenance, and avoid committing protected or identifying information in logs or generated outputs.
 
-The Hallucination release includes a manifest-declared artifact bundle under `artifacts/hallucination/`. Treat those files as immutable release artifacts. The bundle includes Stanford source rows, HealthBench-derived source rows, 1,965 generated model responses, 1,918 detector outputs, and provenance metadata used by the offline validation and summarization commands.
+The Hallucination release includes a manifest-declared artifact bundle under `artifacts/hallucination/`. Treat those files as immutable release artifacts. The bundle includes Stanford source rows, HealthBench-derived source rows, generated model responses, detector outputs, and provenance metadata used by the offline validation and summarization commands.
 
 See [docs/data.md](docs/data.md), [docs/reproducibility.md](docs/reproducibility.md), and [docs/axes/hallucination.md](docs/axes/hallucination.md).
 
